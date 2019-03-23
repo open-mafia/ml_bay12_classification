@@ -23,21 +23,23 @@ class GCSLoader():
         self.fs= gcsfs.GCSFileSystem(project=project)
         self.default_path=path
 
+    def load(self,path):
+        with self.fs.open(path) as f:
+            return pd.read_csv(f)
 
     def get_post(self, which='train'):
         path=os.path.join(self.default_path, which, 'post.csv').replace("\\","/")
-        with self.fs.open(path) as f:
-            post = pd.read_csv(f)
-        return post
-        
-        
+        return self.load(path)
+
     def get_role(self, which='train'):
         path=os.path.join(self.default_path, which, 'role.csv').replace("\\","/")
-        with self.fs.open(path) as f:
-            role = pd.read_csv(f)
-        return role
+        return self.load(path)
 
     def get_label_map(self):
-        with self.fs.open(os.path.join(self.default_path,'label_map.csv').replace("\\","/")) as f:
-            label_map = pd.read_csv(f)
-        return label_map
+        return self.load(os.path.join(self.default_path,'label_map.csv').replace("\\","/"))
+
+    def get_role_answers(self):
+        return self.load(os.path.join(self.default_path,'test','role_answers.csv').replace("\\","/"))
+
+    def get_role_random(self):
+        return self.load(os.path.join(self.default_path,'test','role_RANDOM.csv').replace("\\","/"))
